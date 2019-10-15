@@ -31,12 +31,17 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"sigs.k8s.io/yaml"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/apimachinery/pkg/util/uuid"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/apiserver/pkg/apis/apiserver"
+	"k8s.io/apiserver/pkg/apis/apiserver/install"
+	"k8s.io/apiserver/pkg/apis/apiserver/v1alpha1"
 	"k8s.io/apiserver/pkg/server"
 	"k8s.io/apiserver/pkg/server/healthz"
 	"k8s.io/apiserver/pkg/server/mux"
@@ -77,6 +82,12 @@ const (
 	// ConfigzName is the name used for register kube-controller manager /configz, same with GroupName.
 	ConfigzName = "kubecontrollermanager.config.k8s.io"
 )
+
+var cfgScheme = runtime.NewScheme()
+
+func init() {
+	install.Install(cfgScheme)
+}
 
 // ControllerLoopMode is the kube-controller-manager's mode of running controller loops that are cloud provider dependent
 type ControllerLoopMode int
@@ -164,6 +175,16 @@ func Run(c *config.CompletedConfig, stopCh <-chan struct{}) error {
 		cfgz.Set(c.ComponentConfig)
 	} else {
 		klog.Errorf("unable to register configz: %v", err)
+	}
+
+	// Proof of concept for loading leader-migrator configuration from a file.
+	migratorConfig, err := ReadLeaderMigratorConfiguration("/tmp/config.yaml")
+	if err != nil {
+		klog.Errorf("error reading /tmp/config.yaml: %v", err)
+	}
+	klog.Warningf("Got a config for migrator lock %s", migratorConfig.LeaderName)
+	for _, controllerLeader := range migratorConfig.ControllerLeaders {
+		klog.Warningf("Controller %s should run on manager %s", controllerLeader.Name, controllerLeader.Manager)
 	}
 
 	// Setup any healthz checks we will want to use.
@@ -283,6 +304,35 @@ func Run(c *config.CompletedConfig, stopCh <-chan struct{}) error {
 		Name:     "kube-controller-manager",
 	})
 	panic("unreachable")
+}
+
+func ReadLeaderMigratorConfiguration(configFilePath string) (*apiserver.LeaderMigratorConfiguration, error) {
+	if configFilePath == "" {
+		return nil, nil
+	}
+	// a file was provided, so we just read it.
+	data, err := ioutil.ReadFile(configFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("unable to read leader migrator configuration from %q [%v]", configFilePath, err)
+	}
+	var decodedConfig v1alpha1.LeaderMigratorConfiguration
+	err = yaml.Unmarshal(data, &decodedConfig)
+	if err != nil {
+		// we got an error where the decode wasn't related to a missing type
+		return nil, err
+	}
+	if decodedConfig.Kind != "LeaderMigratorConfiguration" {
+		return nil, fmt.Errorf("invalid migrator configuration object %q", decodedConfig.Kind)
+	}
+	config, err := cfgScheme.ConvertToVersion(&decodedConfig, apiserver.SchemeGroupVersion)
+	if err != nil {
+		// we got an error where the decode wasn't related to a missing type
+		return nil, err
+	}
+	if internalConfig, ok := config.(*apiserver.LeaderMigratorConfiguration); ok {
+		return internalConfig, nil
+	}
+	return nil, fmt.Errorf("unable to convert %T to *apiserver.LeaderMigratorConfiguration", config)
 }
 
 // ControllerContext defines the context object for controller

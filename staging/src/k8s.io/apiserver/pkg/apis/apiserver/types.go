@@ -97,3 +97,24 @@ type HTTPConnectConfig struct {
 	// +optional
 	ClientCert string
 }
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// LeaderMigratorConfiguration provides versioned configuration for all migrating leader locks.
+type LeaderMigratorConfiguration struct {
+	metav1.TypeMeta
+
+	// LeaderName is the name of the resource under which the controllers should be run.
+	LeaderName string
+
+	// ControllerLeaders contains a list of migrating leader lock configurations
+	ControllerLeaders []ControllerLeaderConfiguration
+}
+
+// ControllerLeaderConfiguration provides the configuration for a migrating leader lock.
+type ControllerLeaderConfiguration struct {
+	// Name is the name of the controller being migrated
+	Name string
+
+	// Server is the name of the controller manager in which the controller should be running
+	Manager string
+}

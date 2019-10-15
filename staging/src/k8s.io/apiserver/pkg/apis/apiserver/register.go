@@ -46,6 +46,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&AdmissionConfiguration{},
 		&EgressSelectorConfiguration{},
+		&LeaderMigratorConfiguration{},
 	)
 	return nil
 }
