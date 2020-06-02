@@ -11,7 +11,6 @@ go_library(
     deps = [
         "//cmd/cloud-controller-manager/app/config:go_default_library",
         "//cmd/cloud-controller-manager/app/options:go_default_library",
-        "//cmd/controller-manager/app:go_default_library",
         "//pkg/controller/cloud:go_default_library",
         "//pkg/controller/route:go_default_library",
         "//pkg/controller/service:go_default_library",
@@ -30,6 +29,7 @@ go_library(
         "//staging/src/k8s.io/component-base/term:go_default_library",
         "//staging/src/k8s.io/component-base/version:go_default_library",
         "//staging/src/k8s.io/component-base/version/verflag:go_default_library",
+        "//staging/src/k8s.io/controller-manager/app:go_default_library",
         "//vendor/github.com/spf13/cobra:go_default_library",
         "//vendor/k8s.io/klog/v2:go_default_library",
         "//vendor/k8s.io/utils/net:go_default_library",

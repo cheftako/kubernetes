@@ -34,7 +34,6 @@ go_library(
     ],
     importpath = "k8s.io/kubernetes/cmd/kube-controller-manager/app/options",
     deps = [
-        "//cmd/controller-manager/app/options:go_default_library",
         "//cmd/kube-controller-manager/app/config:go_default_library",
         "//pkg/controller/apis/config:go_default_library",
         "//pkg/controller/apis/config/scheme:go_default_library",
@@ -73,6 +72,7 @@ go_library(
         "//staging/src/k8s.io/client-go/tools/record:go_default_library",
         "//staging/src/k8s.io/component-base/cli/flag:go_default_library",
         "//staging/src/k8s.io/component-base/metrics:go_default_library",
+        "//staging/src/k8s.io/controller-manager/app/options:go_default_library",
         "//staging/src/k8s.io/kube-controller-manager/config/v1alpha1:go_default_library",
         "//vendor/github.com/spf13/pflag:go_default_library",
         "//vendor/k8s.io/klog/v2:go_default_library",
@@ -97,7 +97,6 @@ go_test(
     srcs = ["options_test.go"],
     embed = [":go_default_library"],
     deps = [
-        "//cmd/controller-manager/app/options:go_default_library",
         "//cmd/kube-controller-manager/app/config:go_default_library",
         "//pkg/controller/apis/config:go_default_library",
         "//pkg/controller/certificates/signer/config:go_default_library",
@@ -115,7 +114,6 @@ go_test(
         "//pkg/controller/replicaset/config:go_default_library",
         "//pkg/controller/replication/config:go_default_library",
         "//pkg/controller/resourcequota/config:go_default_library",
-        "//pkg/controller/service/config:go_default_library",
         "//pkg/controller/serviceaccount/config:go_default_library",
         "//pkg/controller/statefulset/config:go_default_library",
         "//pkg/controller/ttlafterfinished/config:go_default_library",
@@ -126,6 +124,7 @@ go_test(
         "//staging/src/k8s.io/apiserver/pkg/server/options:go_default_library",
         "//staging/src/k8s.io/component-base/config:go_default_library",
         "//staging/src/k8s.io/component-base/metrics:go_default_library",
+        "//staging/src/k8s.io/controller-manager/app/options:go_default_library",
         "//vendor/github.com/spf13/pflag:go_default_library",
     ],
 )

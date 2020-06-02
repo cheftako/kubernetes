@@ -6,7 +6,8 @@ go_library(
         "helper.go",
         "serve.go",
     ],
-    importpath = "k8s.io/kubernetes/cmd/controller-manager/app",
+    importmap = "k8s.io/kubernetes/vendor/k8s.io/controller-manager/app",
+    importpath = "k8s.io/controller-manager/app",
     visibility = ["//visibility:public"],
     deps = [
         "//staging/src/k8s.io/apimachinery/pkg/util/sets:go_default_library",
@@ -39,7 +40,7 @@ filegroup(
     name = "all-srcs",
     srcs = [
         ":package-srcs",
-        "//cmd/controller-manager/app/options:all-srcs",
+        "//staging/src/k8s.io/controller-manager/app/options:all-srcs",
     ],
     tags = ["automanaged"],
     visibility = ["//visibility:public"],

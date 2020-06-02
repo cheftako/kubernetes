@@ -4,11 +4,11 @@ go_library(
     name = "go_default_library",
     srcs = [
         "doc.go",
-        "types.go",
         "zz_generated.deepcopy.go",
     ],
     importpath = "k8s.io/kubernetes/pkg/controller/service/config",
     visibility = ["//visibility:public"],
+    deps = ["//staging/src/k8s.io/controller-manager/app/options:go_default_library"],
 )
 
 filegroup(
