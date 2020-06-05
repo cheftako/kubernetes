@@ -59,8 +59,6 @@ rules:
       - k8s.io/kubernetes/pkg/controller/resourcequota/config/v1alpha1
       - k8s.io/kubernetes/pkg/controller/route
       - k8s.io/kubernetes/pkg/controller/service
-      - k8s.io/kubernetes/pkg/controller/service/config
-      - k8s.io/kubernetes/pkg/controller/service/config/v1alpha1
       - k8s.io/kubernetes/pkg/controller/serviceaccount/config
       - k8s.io/kubernetes/pkg/controller/serviceaccount/config/v1alpha1
       - k8s.io/kubernetes/pkg/controller/statefulset/config

@@ -18,7 +18,7 @@ package config
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/controller-manager/app/options"
+	options "k8s.io/controller-manager/app/options"
 	csrsigningconfig "k8s.io/kubernetes/pkg/controller/certificates/signer/config"
 	daemonconfig "k8s.io/kubernetes/pkg/controller/daemon/config"
 	deploymentconfig "k8s.io/kubernetes/pkg/controller/deployment/config"
