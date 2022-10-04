@@ -143,15 +143,27 @@ var _ clientConn = &grpc.ClientConn{}
 // gRPC based proxy service.
 // Currently, a single tunnel supports a single connection, and the tunnel is closed when the connection is terminated
 // The Dial() method of the returned tunnel should only be called once
-func CreateSingleUseGrpcTunnel(ctx context.Context, address string, opts ...grpc.DialOption) (Tunnel, error) {
-	c, err := grpc.DialContext(ctx, address, opts...)
+// Deprecated 2022-06-07: use CreateSingleUseGrpcTunnelWithContext
+func CreateSingleUseGrpcTunnel(tunnelCtx context.Context, address string, opts ...grpc.DialOption) (Tunnel, error) {
+	return CreateSingleUseGrpcTunnelWithContext(context.TODO(), tunnelCtx, address, opts...)
+}
+
+// CreateSingleUseGrpcTunnelWithContext creates a Tunnel to dial to a remote server through a
+// gRPC based proxy service.
+// Currently, a single tunnel supports a single connection.
+// The tunnel is normally closed when the connection is terminated.
+// If createCtx is cancelled before tunnel creation, an error will be returned.
+// If tunnelCtx is cancelled while the tunnel is still in use, the tunnel (and any in flight connections) will be closed.
+// The Dial() method of the returned tunnel should only be called once
+func CreateSingleUseGrpcTunnelWithContext(createCtx, tunnelCtx context.Context, address string, opts ...grpc.DialOption) (Tunnel, error) {
+	c, err := grpc.DialContext(createCtx, address, opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	grpcClient := client.NewProxyServiceClient(c)
 
-	stream, err := grpcClient.Proxy(ctx)
+	stream, err := grpcClient.Proxy(tunnelCtx)
 	if err != nil {
 		c.Close()
 		return nil, err

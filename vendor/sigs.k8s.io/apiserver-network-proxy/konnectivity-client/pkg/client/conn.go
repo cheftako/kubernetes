@@ -30,6 +30,8 @@ import (
 // successful delivery of CLOSE_REQ.
 const CloseTimeout = 10 * time.Second
 
+var errConnCloseTimeout = errors.New("close timeout")
+
 // conn is an implementation of net.Conn, where the data is transported
 // over an established tunnel defined by a gRPC service ProxyService.
 type conn struct {
@@ -158,5 +160,5 @@ func (c *conn) Close() error {
 	case <-time.After(CloseTimeout):
 	}
 
-	return errors.New("close timeout")
+	return errConnCloseTimeout
 }
